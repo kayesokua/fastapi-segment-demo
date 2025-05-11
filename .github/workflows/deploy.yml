@@ -21,6 +21,9 @@ jobs:
         run: |
           gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
 
+      - name: Configure Docker
+        run: gcloud auth configure-docker
+
       - name: Build and Push Docker image
         run: |
           docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/segment-api .
@@ -33,6 +36,6 @@ jobs:
             --platform managed \
             --region europe-west1 \
             --allow-unauthenticated \
-            --set-env-vars BASE_DOMAIN={{ secrets.BASE_DOMAIN }} \
+            --set-env-vars BASE_DOMAIN=${{ secrets.BASE_DOMAIN }} \
             --set-env-vars SEGMENT_WRITE_KEY=${{ secrets.SEGMENT_WRITE_KEY }} \
             --set-env-vars API_KEYS=${{ secrets.API_KEYS }}

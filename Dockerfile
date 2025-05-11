@@ -18,7 +18,8 @@ WORKDIR /home/appuser
 
 COPY --chown=appuser:appuser requirements.txt .
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --upgrade -r requirements.txt
+RUN pip install fastapi uvicorn
 
 COPY --chown=appuser:appuser main.py .
 

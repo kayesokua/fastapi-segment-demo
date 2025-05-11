@@ -1,0 +1,42 @@
+name: Deploy to Google Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0.2.0
+        with:
+          version: '318.0.1'
+
+      - name: Authenticate to Google Cloud
+        run: |
+          echo "${{ secrets.GCP_SA_KEY }}" | gcloud auth activate-service-account --key-file=-
+          gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Build Docker image
+        run: |
+          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/segment-api .
+
+      - name: Push Docker image
+        run: |
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/segment-api
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy segment-api \
+            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/segment-api \
+            --platform managed \
+            --region europe-west1 \
+            --allow-unauthenticated \
+            --set-env-vars BASE_DOMAIN=https://segment-api-19895567356.europe-west1.run.app \
+            --set-env-vars SEGMENT_WRITE_KEY=${{ secrets.SEGMENT_WRITE_KEY }} \
+            --set-env-vars API_KEYS=${{ secrets.API_KEYS }}

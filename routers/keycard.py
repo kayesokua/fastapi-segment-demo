@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 keycard = APIRouter()
 
 @keycard.post("/user/check-in/granted", tags=["member-entry"])
-async def gym_entry_granted(
+async def member_entry_granted(
     event_model: GymEntryGrantedEvent,
     request: Request, 
     api_key: str = Depends(validate_api_key)):
@@ -47,7 +47,7 @@ async def gym_entry_granted(
     }
 
 @keycard.post("/user/check-in/denied", tags=["member-entry"])
-async def gym_entry_denied(
+async def member_entry_denied(
     event_model: GymEntryDeniedEvent,
     request: Request, 
     api_key: str = Depends(validate_api_key)):

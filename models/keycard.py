@@ -1,18 +1,19 @@
 import random
 from datetime import datetime
 from pydantic import BaseModel, Field
-from typing import Dict, Literal
+from typing import Dict, Literal, Optional
 
 class EventProperties(BaseModel):
     cardId: str
     reason: Literal["active_member"]
-    direction: Literal["entry", "exit"]
+    direction: Literal["inbound", "outbound"]
 
 class EventContext(BaseModel):
     device: Dict[str,str]
 
 class GymEntryGrantedEvent(BaseModel):
     userId: str = Field(..., min_length=5)
+    type: Literal["track"]
     event: Literal["gym_entry_granted"]
     properties: EventProperties
     context: EventContext
@@ -22,6 +23,7 @@ class GymEntryGrantedEvent(BaseModel):
         json_schema_extra = {
             "example": {
                 "userId": "B0027-14602",
+                "type": "track",
                 "event": "gym_entry_granted",
                 "properties": {
                     "cardId": "HID-987654321",
@@ -41,6 +43,7 @@ class GymEntryGrantedEvent(BaseModel):
 
 class GymEntryDeniedEvent(BaseModel):
     userId: str = Field(..., min_length=5)
+    type: Literal["track"]
     event: Literal["gym_entry_denied"]
     properties: EventProperties
     context: EventContext
@@ -50,6 +53,7 @@ class GymEntryDeniedEvent(BaseModel):
         json_schema_extra = {
             "example": {
                 "userId": "B0027-14602",
+                "type": "track",
                 "event": "gym_entry_denied",
                 "properties": {
                     "cardId": "HID-987654321",

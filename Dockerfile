@@ -8,24 +8,30 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     build-essential \
+    curl \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN useradd -m appuser
-USER appuser
+RUN useradd -m appuser && \
+    mkdir -p /app && \
+    chown appuser:appuser /app
 
-WORKDIR /home/appuser
+WORKDIR /app
+USER appuser
 
 COPY --chown=appuser:appuser requirements.txt .
 
-RUN pip install --no-cache-dir --upgrade -r requirements.txt
-RUN pip install fastapi uvicorn[standard]
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
-COPY --chown=appuser:appuser main.py .
+COPY --chown=appuser:appuser . .
 
-RUN find . -type d -name "__pycache__" -exec rm -rf {} +
+
+ENV PATH="/home/appuser/.local/bin:${PATH}"
 
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:${PORT}/health || exit 1
+    CMD curl -f http://localhost:8080/health || exit 1
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080", "--workers", "1", "--timeout-keep-alive", "60"]
+ENV PYTHONPATH=/home/appuser
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]

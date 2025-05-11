@@ -2,6 +2,15 @@ from datetime import datetime, date
 from pydantic import BaseModel, Field, EmailStr, field_validator
 from typing import Optional, Literal, Dict, Any
 
+
+class UserSampleModel(BaseModel):
+    userId: str
+    traits: Dict
+    context: Dict
+    timestamp: str
+    integrations: Dict
+
+
 class AddressModel(BaseModel):
     zipCode: str = Field(..., example="10315")
     state: str = Field(..., example="Berlin")
@@ -33,7 +42,6 @@ class UserTraitsModel(BaseModel):
         return age
 
 class UserIdentifyModel(BaseModel):
-    type: str = Field(default="identify", example="identify")
     userId: str = Field(..., example="B0027-14602")
     traits: UserTraitsModel
     timestamp: datetime
@@ -45,7 +53,6 @@ class UserIdentifyModel(BaseModel):
         }
         json_schema_extra = {
             "example": {
-                "type": "identify",
                 "userId": "B0027-14602",
                 "traits": {
                     "id": "B0027-14602",
@@ -86,7 +93,6 @@ class NewContractProperties(BaseModel):
     startDate: date = Field(default_factory=date.today)
 
 class NewMemberContractEvent(BaseModel):
-    type: Literal["track"] = Field(default="track", example="track")
     userId: str = Field(..., example="B0027-14602")
     event: str = Field(default="signup_contract_created", example="signup_contract_created")
     currency: str = Field(default="EUR", example="EUR", min_length=3, max_length=3)
@@ -97,7 +103,6 @@ class NewMemberContractEvent(BaseModel):
     class Config:
         json_schema_extra = {
             "example": {
-                "type": "track",
                 "userId": "B0027-14602",
                 "event": "signup_contract_created",
                 "currency": "EUR",

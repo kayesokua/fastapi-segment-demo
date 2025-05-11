@@ -5,7 +5,7 @@ from typing import Dict, Literal, Optional
 
 class EventProperties(BaseModel):
     cardId: str
-    reason: Literal["active_member"]
+    reason: Literal["active_member","insufficient_membership_tier","expired_membership","idle_membership"]
     direction: Literal["inbound", "outbound"]
 
 class EventContext(BaseModel):

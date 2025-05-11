@@ -17,8 +17,7 @@ class UserTraitsModel(BaseModel):
     address: AddressModel
     phone: str = Field(..., example="+4901234567")
     createdAt: datetime = Field(default_factory=datetime.now)
-    
-    age: Optional[int] = Field(None, example=23)
+    age: Optional[int] = Field(None, example=25)
     
     @field_validator('age', mode='before')
     def calculate_age(cls, v, values):
@@ -37,6 +36,7 @@ class UserIdentifyModel(BaseModel):
     type: str = Field(default="identify", example="identify")
     userId: str = Field(..., example="B0027-14602")
     traits: UserTraitsModel
+    timestamp: datetime
 
     class Config:
         json_encoders = {
@@ -53,6 +53,7 @@ class UserIdentifyModel(BaseModel):
                     "lastName": "Kua",
                     "email": "example@gmail.com",
                     "birthday": "2000-12-25",
+                    "age": 25,
                     "gender": "F",
                     "address": {
                         "zipCode": "10117",
@@ -61,7 +62,9 @@ class UserIdentifyModel(BaseModel):
                     },
                     "phone": "+4901234567",
                     "createdAt": datetime.now().isoformat(),
-                }
+                },
+                "timestamp": datetime.now().isoformat(),
+
             }
         }
 
@@ -89,6 +92,7 @@ class NewMemberContractEvent(BaseModel):
     currency: str = Field(default="EUR", example="EUR", min_length=3, max_length=3)
     properties: NewContractProperties
     context: EventContext = Field(default_factory=EventContext)
+    timestamp: datetime
 
     class Config:
         json_schema_extra = {
@@ -101,6 +105,7 @@ class NewMemberContractEvent(BaseModel):
                     "tarifName": "FLEX SPECIAL INKL. PILATES",
                     "tarifFee": 10.00,
                     "startDate": date.today().isoformat()
-                }
+                },
+                "timestamp": datetime.now()
             }
         }

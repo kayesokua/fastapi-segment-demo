@@ -4,7 +4,7 @@ from main import validate_api_key
 from main import SEGMENT_WRITE_KEY, BASE_DOMAIN
 import requests
 import logging
-from datetime import date
+from datetime import date, datetime
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -30,6 +30,7 @@ async def new_member_registration(
                     "email": str(event_model.traits["email"]),
                     "birthday": event_model.traits["birthday"].date(),
                     "gender": str(event_model.traits["gender"]),
+                    "age": str(event_model.traits["age"]),
                     "address": {
                         "zipCode": str(event_model.traits["address"].get("zipCode")),
                         "state": str(event_model.traits["address"].get("state")), 
@@ -37,11 +38,12 @@ async def new_member_registration(
                     },
                     "phone": str(event_model.traits["phone"]), 
                     "createdAt": date.today().isoformat(), 
-                }
+                },
+                "timestamp": datetime.now()
             },
             auth=(SEGMENT_WRITE_KEY, "")
         )
-        identify_response.raise_for_status()
+        print(identify_response.raise_for_status())
 
     except requests.RequestException as e:
         logger.error(f"Segment error: {e}")

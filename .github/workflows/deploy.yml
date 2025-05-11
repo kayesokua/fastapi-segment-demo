@@ -28,6 +28,7 @@ jobs:
         run: |
           docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/segment-api .
           docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/segment-api
+          docker run -p 8080:8080 -e PORT=8080 gcr.io/${{ secrets.GCP_PROJECT_ID }}/segment-api
 
       - name: Deploy to Cloud Run
         run: |
@@ -39,3 +40,5 @@ jobs:
             --set-env-vars BASE_DOMAIN=${{ secrets.BASE_DOMAIN }} \
             --set-env-vars SEGMENT_WRITE_KEY=${{ secrets.SEGMENT_WRITE_KEY }} \
             --set-env-vars API_KEYS=${{ secrets.API_KEYS }}
+            --port 8080 \
+            --timeout 600s

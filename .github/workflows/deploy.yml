@@ -29,16 +29,13 @@ jobs:
           docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/segment-api .
           docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/segment-api
           docker run -p 8080:8080 -e PORT=8080 gcr.io/${{ secrets.GCP_PROJECT_ID }}/segment-api
+          docker run --rm gcr.io/${{ secrets.GCP_PROJECT_ID }}/segment-api python -c "import uvicorn; print('Uvicorn found at:', uvicorn.__file__)"
 
       - name: Deploy to Cloud Run
         run: |
           gcloud run deploy segment-api \
-            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/segment-api \
-            --platform managed \
-            --region europe-west1 \
-            --allow-unauthenticated \
-            --set-env-vars BASE_DOMAIN=${{ secrets.BASE_DOMAIN }} \
-            --set-env-vars SEGMENT_WRITE_KEY=${{ secrets.SEGMENT_WRITE_KEY }} \
-            --set-env-vars API_KEYS=${{ secrets.API_KEYS }}
-            --port 8080 \
-            --timeout 600s
+          --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/segment-api \
+          --platform managed \
+          --region europe-west1 \
+          --allow-unauthenticated \
+          --set-env-vars BASE_DOMAIN=${{ secrets.BASE_DOMAIN }},SEGMENT_WRITE_KEY=${{ secrets.SEGMENT_WRITE_KEY }},API_KEYS=${{ secrets.API_KEYS }}

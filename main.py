@@ -59,7 +59,9 @@ class IdentifyEvent(BaseModel):
     context: Optional[dict] = None
     anonymous_id: Optional[str] = None
 
-# Endpoints
+from routers.keycard import keycard as keycard_routes
+app.include_router(keycard_routes)
+
 @app.post("/track", summary="Track a Segment event")
 async def track_event(
     event: TrackEvent,
